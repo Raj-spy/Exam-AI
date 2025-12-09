@@ -1,96 +1,80 @@
 pipeline {
     agent any
-    environment {
-        DOCKER_HUB_REPO = "samchawla/studybuddy"
-        DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"
-        IMAGE_TAG = "v${BUILD_NUMBER}"
-    }
+    // environment {
+    //     DOCKER_HUB_REPO = "samchawla/studybuddy"
+    //     DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"
+    //     IMAGE_TAG = "v${BUILD_NUMBER}"
+    // }
     stages {
         stage('Checkout Github') {
             steps {
                 echo 'Checking out code from GitHub...'
                 // 1. UPDATED BRANCH NAME to match your working branch
-                checkout scmGit(branches: [[name: '*/study-buddy-ai']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/SamChawla/genai-bootcamp.git']])
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'github-token', url: 'https://github.com/SamChawla/STUDY-BUDDY-AI-.git']])
             }
         }        
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    echo 'Building Docker image...'
-                    
-                    // 2. ADDED 'cd' to navigate to the folder with the Dockerfile
-                    sh 'cd week_5/study-buddy-ai'
-                    
-                    // 3. UPDATED DOCKER BUILD: 'docker.build' now builds from the current directory ('.')
-                    dockerImage = docker.build("${DOCKER_HUB_REPO}:${IMAGE_TAG}", ".") 
-                    
-                    // IMPORTANT: Revert directory back to root if subsequent stages need it,
-                    // or if the agent environment persists the change.
-                    // For safety, you can add: sh 'cd ../..' or ensure the path is included in all stages.
-                }
-            }
-        }
-        stage('Push Image to DockerHub') {
-            steps {
-                script {
-                    echo 'Pushing Docker image to DockerHub...'
-                    docker.withRegistry('https://registry.hub.docker.com' , "${DOCKER_HUB_CREDENTIALS_ID}") {
-                        dockerImage.push("${IMAGE_TAG}")
-                    }
-                }
-            }
-        }
-        stage('Update Deployment YAML with New Tag') {
-            steps {
-                // NOTE: This stage assumes manifests/deployment.yaml is located in the repository root.
-                // If it is inside week_5/study-buddy-ai, you must adjust the path here too.
-                script {
-                    sh """
-                    sed -i 's|image: samchawla/studybuddy:.*|image: samchawla/studybuddy:${IMAGE_TAG}|' manifests/deployment.yaml
-                    """
-                }
-            }
-        }
+       
+        // stage('Push Image to DockerHub') {
+        //     steps {
+        //         script {
+        //             echo 'Pushing Docker image to DockerHub...'
+        //             docker.withRegistry('https://registry.hub.docker.com' , "${DOCKER_HUB_CREDENTIALS_ID}") {
+        //                 dockerImage.push("${IMAGE_TAG}")
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Update Deployment YAML with New Tag') {
+        //     steps {
+        //         // NOTE: This stage assumes manifests/deployment.yaml is located in the repository root.
+        //         // If it is inside week_5/study-buddy-ai, you must adjust the path here too.
+        //         script {
+        //             sh """
+        //             sed -i 's|image: samchawla/studybuddy:.*|image: samchawla/studybuddy:${IMAGE_TAG}|' manifests/deployment.yaml
+        //             """
+        //         }
+        //     }
+        // }
 
-        stage('Commit Updated YAML') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
-                        sh '''
-                        git config user.name "Sumit S Chawla"
-                        git config user.email "sam.chawla26@gmail.com"
-                        git add manifests/deployment.yaml
-                        git commit -m "Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
-                        # Ensure 'HEAD:main' is correct if you are committing to the 'main' branch
-                        git push https://${GIT_USER}:${GIT_PASS}@github.com/SamChawla/genai-bootcamp.git HEAD:main
-                        '''
-                    }
-                }
-            }
-        }
-        stage('Install Kubectl & ArgoCD CLI Setup') {
-            steps {
-                sh '''
-                echo 'installing Kubectl & ArgoCD cli...'
-                curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-                chmod +x kubectl
-                mv kubectl /usr/local/bin/kubectl
-                curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-                chmod +x /usr/local/bin/argocd
-                '''
-            }
-        }
-        stage('Apply Kubernetes & Sync App with ArgoCD') {
-            steps {
-                script {
-                    kubeconfig(credentialsId: 'kubeconfig', serverUrl: 'https://192.168.49.2:8443') {
-                        sh '''
-                        argocd login 34.45.193.5:31704 --username admin --password $(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d) --insecure
-                        argocd app sync study
-                        '''
-                    }
-                }
-            }
-        }
+        // stage('Commit Updated YAML') {
+        //     steps {
+        //         script {
+        //             withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_PASS')]) {
+        //                 sh '''
+        //                 git config user.name "Sumit S Chawla"
+        //                 git config user.email "sam.chawla26@gmail.com"
+        //                 git add manifests/deployment.yaml
+        //                 git commit -m "Update image tag to ${IMAGE_TAG}" || echo "No changes to commit"
+        //                 # Ensure 'HEAD:main' is correct if you are committing to the 'main' branch
+        //                 git push https://${GIT_USER}:${GIT_PASS}@github.com/SamChawla/genai-bootcamp.git HEAD:main
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Install Kubectl & ArgoCD CLI Setup') {
+        //     steps {
+        //         sh '''
+        //         echo 'installing Kubectl & ArgoCD cli...'
+        //         curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+        //         chmod +x kubectl
+        //         mv kubectl /usr/local/bin/kubectl
+        //         curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+        //         chmod +x /usr/local/bin/argocd
+        //         '''
+        //     }
+        // }
+        // stage('Apply Kubernetes & Sync App with ArgoCD') {
+        //     steps {
+        //         script {
+        //             kubeconfig(credentialsId: 'kubeconfig', serverUrl: 'https://192.168.49.2:8443') {
+        //                 sh '''
+        //                 argocd login 34.45.193.5:31704 --username admin --password $(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d) --insecure
+        //                 argocd app sync study
+        //                 '''
+        //             }
+        //         }
+        //     }
+        // }
     }
 }
