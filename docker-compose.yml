@@ -1,25 +1,24 @@
-version: '3.8'
+version: '3.8' 
 services:
-  # 1. Your Application Service (Study Buddy)
   study-buddy-app:
-    image: samchawla/studybuddy:latest # Your Docker Hub image
+    image: samchawla/studybuddy:latest
     container_name: study-buddy-container
     restart: always
-    # Expose the application's internal port (e.g., 8000) only to the internal network
     expose:
-      - 8000
+      - 8501
     
-  # 2. The Nginx Reverse Proxy Service
+    # 🚨 CRITICAL FIX: Load secrets from the .env file
+    env_file:
+      - .env 
+
   nginx-proxy:
-    image: nginx:stable-alpine # Use a stable, lightweight Nginx image
+    # ... (rest of the Nginx configuration remains the same)
+    image: nginx:stable-alpine
     container_name: nginx-proxy-container
     restart: always
     ports:
-      # Map the VM's public port 80 to the container's port 80
       - "80:80"
     volumes:
-      # Mount your custom Nginx configuration file into the container
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    # Nginx must wait for the application to be running
     depends_on:
       - study-buddy-app
