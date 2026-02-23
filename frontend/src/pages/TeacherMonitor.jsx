@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import { BASE_URL } from '../config/backend'
 import '../styles/pages.css'
 
 export default function TeacherMonitor() {
@@ -8,9 +9,8 @@ export default function TeacherMonitor() {
   const [students, setStudents] = useState({})
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws'
-    const host = window.location.hostname + (window.location.port ? ':8000' : '')
-    const socket = new WebSocket(`${protocol}://${host}/ws/teacher/${testId}`)
+    const wsUrl = `${BASE_URL.replace('https', 'wss')}/ws/teacher/${testId}`
+    const socket = new WebSocket(wsUrl)
     socket.onmessage = (evt) => {
       try {
         const data = JSON.parse(evt.data)

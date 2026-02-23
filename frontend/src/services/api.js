@@ -6,10 +6,11 @@
  */
 
 import axios from 'axios'
+import { BASE_URL } from '../config/backend'
 
-// Create Axios instance with base URL pointing to FastAPI backend
+// Create Axios instance with base URL using centralized config
 const api = axios.create({
-  baseURL: 'http://localhost:8001/api',
+  baseURL: `${BASE_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -82,7 +83,8 @@ export const getTestResults = async (testId) => {
  */
 export const healthCheck = async () => {
   try {
-    const response = await api.get('http://localhost:8001/health')
+    // Health endpoint is outside /api path so call full BASE_URL
+    const response = await axios.get(`${BASE_URL}/health`)
     return response.data
   } catch (error) {
     console.error('Error in health check:', error)
