@@ -1,0 +1,11 @@
+/**
+ * App Component Styles - Academic Design
+ * =======================================
+ * Clean, minimal styling
+ */
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

@@ -1,0 +1,818 @@
+/**
+ * Page-Specific Styles
+ * ====================
+ * Styles for different pages and components
+ */
+
+/* Page Header */
+.page-header {
+  background: white;
+  padding: 2rem;
+  border-radius: 0;
+  margin-bottom: 0;
+  box-shadow: none;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.page-header h1 {
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.page-header p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* Form Sections */
+.form-section, .preview-section {
+  background: white;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
+
+.form-section h2, .preview-section h2 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+  font-size: 1.3rem;
+}
+
+/* Content Wrapper */
+.content-wrapper {
+  padding: 2rem;
+}
+
+.sidebar-panel {
+  background: #fafafa;
+  border-right: 1px solid #ddd;
+  padding: 2rem 1.5rem;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.sidebar-section h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #333;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-button {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 0;
+  border: 1px solid #333;
+  background: white;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-button:hover:not(:disabled) {
+  background: #333;
+  color: white;
+}
+
+.sidebar-button.primary {
+  background: #333;
+  color: white;
+}
+
+.sidebar-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.action-buttons .btn {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .action-buttons {
+    flex-direction: column;
+  }
+}
+
+/* Test Info */
+.test-info {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 0;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ddd;
+}
+
+.test-info p {
+  margin: 0.5rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.test-info code {
+  background: white;
+  padding: 0.3rem 0.6rem;
+  border-radius: 0;
+  font-size: 0.85rem;
+}
+
+/* Questions Preview */
+.questions-preview {
+  max-height: 600px;
+  overflow-y: auto;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 0;
+  border: 1px solid #ddd;
+}
+
+.question-card {
+  background: white;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  border-radius: 0;
+  border: 1px solid #ddd;
+  box-shadow: none;
+}
+
+.question-card h4 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.options-list {
+  list-style: none;
+  padding: 0;
+}
+
+.options-list li {
+  padding: 0.5rem 0;
+  color: #555;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.option-label {
+  background: #e8e8e8;
+  color: #333;
+  padding: 0 0.5rem;
+  border-radius: 0;
+  min-width: 25px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Success Message */
+.success-message {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-left: 3px solid #2e7d32;
+  border-radius: 0;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+/* Warning popup for proctoring alerts */
+.warning-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #f97316;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.dashboard-table th, .dashboard-table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+@keyframes flash-bg {
+  0% { background-color: #ffebee; }
+  50% { background-color: #ffcdd2; }
+  100% { background-color: #ffebee; }
+}
+.flash {
+  animation: flash-bg 1s infinite;
+}
+
+.success-message p {
+  color: #333;
+  margin: 0.5rem 0;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.link-box {
+  display: block;
+  background: #f5f5f5;
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 0;
+  word-break: break-all;
+  border: 1px solid #ddd;
+  font-size: 0.85rem;
+  font-family: 'Courier New', monospace;
+}
+
+/* Start Exam Section */
+.start-exam-section {
+  background: white;
+  border-radius: 0;
+  padding: 2rem;
+  box-shadow: none;
+  max-width: 100%;
+  margin: 0;
+}
+
+.exam-header {
+  text-align: left;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.exam-header h1 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.exam-info {
+  background: #f9f9f9;
+  padding: 1rem;
+  border-radius: 0;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.exam-info p {
+  margin: 0.5rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.exam-info strong {
+  color: #333;
+}
+
+.start-exam-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Exam Session */
+.exam-session {
+  background: white;
+  border-radius: 0;
+  padding: 2rem;
+  box-shadow: none;
+}
+
+.session-header {
+  background: #f9f9f9;
+  color: #333;
+  padding: 1.5rem;
+  border-radius: 0;
+  margin-bottom: 2rem;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.session-header h1 {
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+}
+
+.session-header p {
+  color: #666;
+  margin: 0.3rem 0;
+  font-size: 0.95rem;
+}
+
+.session-header strong {
+  color: #333;
+}
+
+/* Questions Container */
+.questions-container {
+  margin: 2rem 0;
+}
+
+.question-section {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0;
+  border: 1px solid #ddd;
+}
+
+.question-section h3 {
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.question-text {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.options-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.option-label-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0;
+}
+
+.option-label-container:hover {
+  background: #f0f0f0;
+}
+
+.option-input {
+  margin-top: 0.2rem;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #333;
+}
+
+.option-text {
+  color: #333;
+  font-size: 0.95rem;
+}
+
+/* Review highlights (no animations, very subtle) */
+.option-correct {
+  background: #e8f5e9; /* light green */
+}
+
+.option-wrong {
+  background: #fff5f5; /* light red */
+}
+
+.option-correct .option-text {
+  color: #2e7d32;
+}
+
+.option-wrong .option-text {
+  color: #d32f2f;
+}
+
+/* Form Actions */
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.form-actions .btn {
+  flex: 1;
+}
+
+/* Progress Info */
+.progress-info {
+  text-align: center;
+  padding: 1rem;
+  color: #666;
+  font-size: 0.95rem;
+  border-top: 1px solid #ddd;
+  margin-top: 2rem;
+}
+/* Results Page */
+.result-page {
+  background: white;
+  padding: 2rem;
+}
+
+.result-header {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.result-header h1 {
+  color: #333;
+  font-size: 1.5rem;
+}
+
+.score-display {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.score-box {
+  width: 150px;
+  height: 150px;
+  border: 2px solid #333;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f9f9f9;
+}
+
+.score-value {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.score-label {
+  font-size: 0.85rem;
+  color: #666;
+  text-transform: uppercase;
+}
+
+/* Result Details */
+.result-details {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 0;
+  border: 1px solid #ddd;
+  margin: 1.5rem 0;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+.result-row:last-child {
+  border-bottom: none;
+}
+
+.result-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.result-value {
+  color: #333;
+  font-weight: 600;
+}
+
+.result-status {
+  text-align: center;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.result-status.passed {
+  color: #2e7d32;
+}
+
+.result-status.failed {
+  color: #d32f2f;
+}
+
+/* Dashboard */
+.dashboard-container {
+  background: white;
+  padding: 2rem;
+}
+
+.dashboard-section {
+  margin-bottom: 2rem;
+}
+
+.dashboard-section h2 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+
+.dashboard-info-box {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-info-box p {
+  margin: 0.5rem 0;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.dashboard-info-box strong {
+  color: #333;
+}
+
+/* Tables */
+.table-container {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+th {
+  background: #f9f9f9;
+  color: #333;
+  font-weight: 600;
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+td {
+  padding: 0.8rem 1rem;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+tr:hover {
+  background: #f9f9f9;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-passed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-failed {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+/* Empty States */
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.empty-state p {
+  font-size: 0.95rem;
+  margin: 0.5rem 0;
+}
+
+/* Loading State */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-top: 2px solid #333;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Error State */
+.error-state {
+  text-align: center;
+  padding: 2rem;
+  color: #d32f2f;
+}
+
+.error-state h2 {
+  color: #d32f2f;
+}
+
+.error-state p {
+  color: #666;
+  margin: 1rem 0;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 1rem;
+  }
+
+  .question-section {
+    padding: 1rem;
+  }
+
+  .score-box {
+    width: 120px;
+    height: 120px;
+  }
+
+  .score-value {
+    font-size: 2.5rem;
+  }
+
+  .result-row {
+    flex-direction: column;
+    padding: 1rem 0;
+  }
+
+  .result-value {
+    margin-top: 0.5rem;
+  }
+
+  table {
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 0.6rem;
+  }
+
+  .sidebar-panel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+    order: -1;
+  }
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.dashboard-actions .btn {
+  flex: 1;
+}
+
+.submissions-table {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+table thead {
+  background: #f7fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+}
+
+table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+table tr:hover {
+  background: #f9fafb;
+}
+
+.score-cell {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.correct-cell {
+  color: #38a169;
+  font-weight: 600;
+}
+
+.wrong-cell {
+  color: #c53030;
+  font-weight: 600;
+}
+
+table td.passed {
+  color: #38a169;
+  font-weight: 600;
+}
+
+table td.failed {
+  color: #c53030;
+  font-weight: 600;
+}
+
+.empty-message {
+  color: #999;
+  font-style: italic;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header {
+    padding: 1.5rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .form-section, .preview-section, .result-card {
+    padding: 1.5rem;
+  }
+
+  .start-exam-section {
+    padding: 1.5rem;
+  }
+
+  .result-card {
+    padding: 1.5rem;
+  }
+
+  .score-circle {
+    width: 120px;
+    height: 120px;
+  }
+
+  .score-number {
+    font-size: 2rem;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  table th, table td {
+    padding: 0.7rem;
+  }
+}
