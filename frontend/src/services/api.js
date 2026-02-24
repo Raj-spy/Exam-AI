@@ -33,7 +33,7 @@ export const createTest = async (data) => {
 
     const payload = {
       topic,
-      difficulty,
+      difficulty: difficulty ? difficulty.toLowerCase() : undefined,
       num_questions: num_questions !== undefined ? Number(num_questions) : undefined,
       ...(question_type !== undefined && { question_type }),
     }
