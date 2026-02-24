@@ -54,7 +54,7 @@ class ExamService:
                 f"questions={num_questions}, type={question_type}"
             )
 
-            # Generate questions
+                # Generate questions, retrying individual failures without aborting
             questions = []
             for i in range(num_questions):
                 try:
@@ -67,12 +67,19 @@ class ExamService:
                             topic, difficulty
                         )
                     questions.append(question.dict())
+                    logger.info(f"Question {i+1} generated successfully")
                 except Exception as e:
-                    logger.error(f"Error generating question {i+1}: {str(e)}")
-                    # Continue with other questions
+                    logger.error(
+                        f"Failed to generate question {i+1}/{num_questions}: {str(e)}"
+                    )
+                    # continue with remaining questions
                     continue
 
-            if not questions:
+            logger.info(
+                f"Question generation complete: {len(questions)}/{num_questions} succeeded"
+            )
+
+            if len(questions) == 0:
                 raise CustomException(
                     "Failed to generate any questions",
                     Exception("No questions generated")

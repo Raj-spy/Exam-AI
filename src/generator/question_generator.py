@@ -33,7 +33,7 @@ class QuestionGenerator:
                 raw = response.content
                 cleaned = raw.strip()
 
-                # first try using the parser directly
+                # attempt direct parse first
                 try:
                     parsed = parser.parse(cleaned)
                     self.logger.info("Successfully parsed the question")
@@ -43,28 +43,25 @@ class QuestionGenerator:
                         f"Initial parse failed, attempting defensive parsing: {first_err}"
                     )
 
-                # defensive attempt: extract JSON substring between first '[' and last ']'
+                # defensive parsing: extract first JSON object {} via regex
                 try:
-                    import json
+                    import re, json
 
-                    start = cleaned.find("[")
-                    end = cleaned.rfind("]")
-                    if start != -1 and end != -1:
-                        sub = cleaned[start : end + 1]
-                        data = json.loads(sub)
-                        # handle list output by taking first element
-                        candidate = (
-                            data[0] if isinstance(data, list) and data else data
-                        )
-                        parsed = parser.parse(json.dumps(candidate))
-                        self.logger.info("Parsed question after sanitizing JSON")
+                    m = re.search(r"\{.*\}", cleaned, re.DOTALL)
+                    if m:
+                        json_str = m.group(0)
+                        # sanitize backslashes not part of valid escape
+                        json_str = re.sub(r'\\(?!["\\/bfnrtu])', r"\\\\", json_str)
+                        data = json.loads(json_str)
+                        parsed = parser.parse(json.dumps(data))
+                        self.logger.info("Parsed question after regex extraction")
                         return parsed
                 except Exception as second_err:
                     self.logger.error(
                         f"Defensive parse attempt failed: {second_err}"
                     )
 
-                # if we reach here, parsing failed entirely
+                # nothing worked
                 self.logger.error(f"Unable to parse LLM output, raw response:\n{raw}")
                 raise ValueError("Generated content could not be parsed as JSON")
 
