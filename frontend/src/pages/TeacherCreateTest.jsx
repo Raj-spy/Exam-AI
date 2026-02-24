@@ -19,7 +19,7 @@ export default function TeacherCreateTest() {
   const [formData, setFormData] = useState({
     topic: '',
     difficulty: 'medium',
-    number_of_questions: 5,
+    num_questions: 5,
     question_type: 'mcq'
   })
   const [loading, setLoading] = useState(false)
@@ -31,7 +31,7 @@ export default function TeacherCreateTest() {
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'number_of_questions' ? parseInt(value) : value
+      [name]: name === 'num_questions' ? parseInt(value) : value
     }))
     setError('')
   }
@@ -126,12 +126,12 @@ export default function TeacherCreateTest() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="number_of_questions">Questions</label>
+            <label htmlFor="num_questions">Questions</label>
             <input
-              id="number_of_questions"
+              id="num_questions"
               type="number"
-              name="number_of_questions"
-              value={formData.number_of_questions}
+              name="num_questions"
+              value={formData.num_questions}
               onChange={handleInputChange}
               min="1"
               max="10"

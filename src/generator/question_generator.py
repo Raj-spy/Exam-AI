@@ -80,7 +80,8 @@ class QuestionGenerator:
 
             question = self._retry_and_parse(mcq_prompt_template,parser,topic,difficulty)
 
-            if len(question.options) != 4 or question.correct_answer not in question.options:
+            opts = [opt.strip() for opt in question.options]
+            if len(opts) != 4 or question.correct_answer.strip() not in opts:
                 raise ValueError("Invalid MCQ Structure")
             
             self.logger.info("Generated a valid MCQ Question")

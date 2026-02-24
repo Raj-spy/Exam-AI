@@ -16,7 +16,7 @@ class CreateTestSchema(BaseModel):
         default="medium",
         description="Difficulty level: easy, medium, or hard"
     )
-    number_of_questions: int = Field(
+    num_questions: int = Field(
         default=5,
         ge=1,
         le=10,
@@ -31,6 +31,6 @@ class CreateTestSchema(BaseModel):
         example = {
             "topic": "Indian History",
             "difficulty": "medium",
-            "number_of_questions": 5,
+            "num_questions": 5,
             "question_type": "mcq"
         }

@@ -31,7 +31,7 @@ async def create_test(request: CreateTestSchema) -> Dict[str, Any]:
     Request body:
     - topic: Subject topic (required)
     - difficulty: Easy, Medium, or Hard (optional, default: medium)
-    - number_of_questions: 1-10 (optional, default: 5)
+    - num_questions: 1-10 (optional, default: 5)
     - question_type: 'mcq' or 'fill_blank' (optional, default: mcq)
 
     Returns:
@@ -45,7 +45,7 @@ async def create_test(request: CreateTestSchema) -> Dict[str, Any]:
         result = exam_service.create_exam(
             topic=request.topic,
             difficulty=request.difficulty,
-            num_questions=request.number_of_questions,
+            num_questions=request.num_questions,
             question_type=request.question_type or "mcq"
         )
 

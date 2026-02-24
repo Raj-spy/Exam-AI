@@ -18,7 +18,7 @@ const api = axios.create({
 
 /**
  * Create a new exam with AI-generated questions
- * @param {Object} data - { topic, difficulty, number_of_questions, question_type }
+ * @param {Object} data - { topic, difficulty, num_questions, question_type }
  * @returns {Promise<Object>} - { testId, totalQuestions, testLink }
  */
 export const createTest = async (data) => {
@@ -27,14 +27,14 @@ export const createTest = async (data) => {
     const {
       topic,
       difficulty,
-      number_of_questions,
+      num_questions,
       question_type,
     } = data || {}
 
     const payload = {
       topic,
       difficulty,
-      number_of_questions: number_of_questions !== undefined ? Number(number_of_questions) : undefined,
+      num_questions: num_questions !== undefined ? Number(num_questions) : undefined,
       ...(question_type !== undefined && { question_type }),
     }
 
