@@ -12,25 +12,70 @@ class QuestionGenerator:
         self.llm = get_groq_llm()
         self.logger = get_logger(self.__class__.__name__)
 
-    def _retry_and_parse(self,prompt,parser,topic,difficulty):
+    def _retry_and_parse(self, prompt, parser, topic, difficulty):
+        """Invoke the LLM and safely parse the returned content into the
+        provided Pydantic output parser.
+
+        Adds defensive logic to strip extraneous text and recover valid JSON.
+        Logs the raw response when parsing ultimately fails.
+        """
 
         for attempt in range(settings.MAX_RETRIES):
             try:
-                self.logger.info(f"Generating question for topic {topic} with difficulty {difficulty}")
+                self.logger.info(
+                    f"Generating question for topic {topic} with difficulty {difficulty}"
+                )
 
-                response = self.llm.invoke(prompt.format(topic=topic , difficulty=difficulty))
+                response = self.llm.invoke(
+                    prompt.format(topic=topic, difficulty=difficulty)
+                )
 
-                parsed = parser.parse(response.content)
+                raw = response.content
+                cleaned = raw.strip()
 
-                self.logger.info("Sucesfully parsed the question")
+                # first try using the parser directly
+                try:
+                    parsed = parser.parse(cleaned)
+                    self.logger.info("Successfully parsed the question")
+                    return parsed
+                except Exception as first_err:
+                    self.logger.warning(
+                        f"Initial parse failed, attempting defensive parsing: {first_err}"
+                    )
 
-                return parsed
-            
+                # defensive attempt: extract JSON substring between first '[' and last ']'
+                try:
+                    import json
+
+                    start = cleaned.find("[")
+                    end = cleaned.rfind("]")
+                    if start != -1 and end != -1:
+                        sub = cleaned[start : end + 1]
+                        data = json.loads(sub)
+                        # handle list output by taking first element
+                        candidate = (
+                            data[0] if isinstance(data, list) and data else data
+                        )
+                        parsed = parser.parse(json.dumps(candidate))
+                        self.logger.info("Parsed question after sanitizing JSON")
+                        return parsed
+                except Exception as second_err:
+                    self.logger.error(
+                        f"Defensive parse attempt failed: {second_err}"
+                    )
+
+                # if we reach here, parsing failed entirely
+                self.logger.error(f"Unable to parse LLM output, raw response:\n{raw}")
+                raise ValueError("Generated content could not be parsed as JSON")
+
             except Exception as e:
                 self.logger.error(f"Error coming : {str(e)}")
-                if attempt==settings.MAX_RETRIES-1:
-                    raise CustomException(f"Generation failed after {settings.MAX_RETRIES} attempts", e)
-                
+                if attempt == settings.MAX_RETRIES - 1:
+                    raise CustomException(
+                        f"Generation failed after {settings.MAX_RETRIES} attempts",
+                        e,
+                    )
+                # otherwise continue to next retry
     
     def generate_mcq(self,topic:str,difficulty:str='medium') -> MCQQuestion:
         try:
