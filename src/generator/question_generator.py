@@ -1,10 +1,12 @@
-from langchain_core.output_parsers import PydanticOutputParser
-from src.models.question_schemas import MCQQuestion,FillBlankQuestion
-from src.prompts.templates import mcq_prompt_template,fill_blank_prompt_template
+from src.models.question_schemas import MCQQuestion, FillBlankQuestion
+from src.prompts.templates import mcq_prompt_template, fill_blank_prompt_template
 from src.llm.groq_client import get_groq_llm
 from src.config.settings import settings
 from src.common.logger import get_logger
 from src.common.custom_exception import CustomException
+
+import re
+import json
 
 
 class QuestionGenerator:
@@ -12,12 +14,10 @@ class QuestionGenerator:
         self.llm = get_groq_llm()
         self.logger = get_logger(self.__class__.__name__)
 
-    def _retry_and_parse(self, prompt, parser, topic, difficulty):
-        """Invoke the LLM and safely parse the returned content into the
-        provided Pydantic output parser.
-
-        Adds defensive logic to strip extraneous text and recover valid JSON.
-        Logs the raw response when parsing ultimately fails.
+    def _retry_and_parse(self, prompt, topic, difficulty):
+        """
+        Invoke LLM, extract first valid JSON object,
+        sanitize it, and return parsed dict.
         """
 
         for attempt in range(settings.MAX_RETRIES):
@@ -33,80 +33,71 @@ class QuestionGenerator:
                 raw = response.content
                 cleaned = raw.strip()
 
-                # attempt direct parse first
-                try:
-                    parsed = parser.parse(cleaned)
-                    self.logger.info("Successfully parsed the question")
-                    return parsed
-                except Exception as first_err:
-                    self.logger.warning(
-                        f"Initial parse failed, attempting defensive parsing: {first_err}"
-                    )
+                self.logger.info(f"RAW LLM OUTPUT:\n{raw}")
 
-                # defensive parsing: extract first JSON object {} via regex
-                try:
-                    import re, json
+                # Extract first JSON object
+                match = re.search(r"\{.*\}", cleaned, re.DOTALL)
+                if not match:
+                    raise ValueError("No JSON object found in LLM response")
 
-                    m = re.search(r"\{.*\}", cleaned, re.DOTALL)
-                    if m:
-                        json_str = m.group(0)
-                        # sanitize backslashes not part of valid escape
-                        json_str = re.sub(r'\\(?!["\\/bfnrtu])', r"\\\\", json_str)
-                        data = json.loads(json_str)
-                        parsed = parser.parse(json.dumps(data))
-                        self.logger.info("Parsed question after regex extraction")
-                        return parsed
-                except Exception as second_err:
-                    self.logger.error(
-                        f"Defensive parse attempt failed: {second_err}"
-                    )
+                json_str = match.group(0)
 
-                # nothing worked
-                self.logger.error(f"Unable to parse LLM output, raw response:\n{raw}")
-                raise ValueError("Generated content could not be parsed as JSON")
+                # Fix invalid escape sequences
+                json_str = re.sub(r'\\(?!["\\/bfnrtu])', r"\\\\", json_str)
+
+                data = json.loads(json_str)
+
+                return data
 
             except Exception as e:
-                self.logger.error(f"Error coming : {str(e)}")
+                self.logger.error(f"Generation attempt failed: {str(e)}")
+
                 if attempt == settings.MAX_RETRIES - 1:
                     raise CustomException(
                         f"Generation failed after {settings.MAX_RETRIES} attempts",
                         e,
                     )
-                # otherwise continue to next retry
-    
-    def generate_mcq(self,topic:str,difficulty:str='medium') -> MCQQuestion:
+
+    # ------------------ MCQ ------------------
+
+    def generate_mcq(self, topic: str, difficulty: str = "medium") -> MCQQuestion:
         try:
-            parser = PydanticOutputParser(pydantic_object=MCQQuestion)
+            data = self._retry_and_parse(mcq_prompt_template, topic, difficulty)
 
-            question = self._retry_and_parse(mcq_prompt_template,parser,topic,difficulty)
+            question = MCQQuestion(**data)
 
-            opts = [opt.strip().lower() for opt in question.options]
-            if len(opts) != 4:
+            # Relaxed validation
+            options_normalized = [opt.strip().lower() for opt in question.options]
+
+            if len(options_normalized) != 4:
                 raise ValueError("Invalid MCQ Structure")
-            corr = question.correct_answer.strip().lower()
-            if corr not in opts:
-                raise ValueError("Correct answer mismatch")
-            
-            self.logger.info("Generated a valid MCQ Question")
-            return question
-        
-        except Exception as e:
-            self.logger.error(f"Failed to generate MCQ : {str(e)}")
-            raise CustomException("MCQ generation failed" , e)
-        
-    
-    def generate_fill_blank(self,topic:str,difficulty:str='medium') -> FillBlankQuestion:
-        try:
-            parser = PydanticOutputParser(pydantic_object=FillBlankQuestion)
 
-            question = self._retry_and_parse(fill_blank_prompt_template,parser,topic,difficulty)
+            correct_normalized = question.correct_answer.strip().lower()
+
+            if correct_normalized not in options_normalized:
+                raise ValueError("Correct answer mismatch")
+
+            self.logger.info("Generated valid MCQ")
+            return question
+
+        except Exception as e:
+            self.logger.error(f"Failed to generate MCQ: {str(e)}")
+            raise CustomException("MCQ generation failed", e)
+
+    # ------------------ Fill in Blank ------------------
+
+    def generate_fill_blank(self, topic: str, difficulty: str = "medium") -> FillBlankQuestion:
+        try:
+            data = self._retry_and_parse(fill_blank_prompt_template, topic, difficulty)
+
+            question = FillBlankQuestion(**data)
 
             if "___" not in question.question:
                 raise ValueError("Fill in blanks should contain '___'")
-            
-            self.logger.info("Generated a valid Fill in Blanks Question")
+
+            self.logger.info("Generated valid Fill in Blank question")
             return question
-        
+
         except Exception as e:
-            self.logger.error(f"Failed to generate fillups : {str(e)}")
-            raise CustomException("Fill in blanks generation failed" , e)
+            self.logger.error(f"Failed to generate fill blank: {str(e)}")
+            raise CustomException("Fill in blanks generation failed", e)
