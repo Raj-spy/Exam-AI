@@ -23,7 +23,27 @@ const api = axios.create({
  */
 export const createTest = async (data) => {
   try {
-    const response = await api.post('/create-test', data)
+    // build payload matching backend schema exactly
+    const {
+      topic,
+      difficulty,
+      number_of_questions,
+      question_type,
+    } = data || {}
+
+    const payload = {
+      topic,
+      difficulty,
+      number_of_questions: number_of_questions !== undefined ? Number(number_of_questions) : undefined,
+      ...(question_type !== undefined && { question_type }),
+    }
+
+    // remove undefined keys
+    Object.keys(payload).forEach(
+      (k) => payload[k] === undefined && delete payload[k]
+    )
+
+    const response = await api.post('/create-test', payload)
     return response.data
   } catch (error) {
     console.error('Error creating test:', error)
